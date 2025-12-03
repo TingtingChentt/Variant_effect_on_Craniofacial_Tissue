@@ -102,7 +102,7 @@ This prevents sequence leakage across sets (We excluded: chrY).
 
 <a href="https://deepmind.com/blog/article/enformer">Enformer</a> (DeepMind, 2021) is a transformer-based model for long-range regulatory sequence modeling.
 
-<img src="./enformer.png" width="450px"></img>
+<img src="./enformer.png" width="550px"></img>
 
 #### Modifications for this project
 
@@ -111,7 +111,7 @@ This prevents sequence leakage across sets (We excluded: chrY).
 - Finetune the new head + selected upper layers
 - Optimize using MSE or Poisson regression loss
 
-<img src="./finetune.png" width="450px"></img>
+<img src="./finetune.png" width="550px"></img>
 
 ## 🚀 Usage
 ### Install
@@ -165,12 +165,21 @@ Used to identify:
 - enhancer gain/loss
 - stage-specific regulatory disruptions
 
+**Example:**
+
+Given a specific variant with chr, position, ref, and alt alleles, e.g., chr1:209827887_C>T
+
+Can also view the detailed code example at **Jupyter Notebook**: ```variant_prediction.ipynb```
+
+<img src="./output1.png" width="500px"></img>
+<img src="./output2.png" width="500px"></img>
+
 #### (2) IRF6 Variant Group Analysis
 
 Variants are grouped into:
 
-- Functional variants
-- Non-functional variants
+- **Functional variants** (Two SNPs (rs11119348 and rs661849))
+- **Non-functional variants**
 
 For each variant:
 
@@ -181,42 +190,56 @@ delta_bins = y_alt - y_ref                      # (B, T)
 logfc_bins = np.log2((y_alt + eps) / (y_ref + eps))
 ```
 - Summarize distributions
-- Perform statistical tests (Mann–Whitney U, t-test)
+- Perform statistical tests (Mann–Whitney U-test)
 - Compute classification AUC
 
-Visualizations:
+**Results and Visualizations:**
 
-violin / box plots
+Group comparison: stats + AUC
+```Python
+# Descriptive stats
+mean_func: 0.004429922439157963
+mean_nonfunc: 0.0009583568316884339
+median_func: 0.004429922439157963
+median_nonfunc: 0.00047779930173419416
 
-scatter plots
+# Mann-Whitney U-test (non-parametric)
+mannwhitney_U: 1183.0
+mannwhitney_p: 0.0036704139947948806
 
-ROC curves
+# Effect size
+cohens_d: 1.973862886428833
 
-## 📁 Repository Structure
+# AUC: can scores distinguish functional vs non-functional?
+auc: 0.971264367816092
+```
+Per-track stats (f->functional, nf->nonfunctional):
 
-├── data/
-│   ├── raw/
-│   ├── bigwig/
-│   ├── bigbed/
-│   ├── processed/
-│   └── peaks/
-├── src/
-│   ├── preprocessing/
-│   ├── enformer/
-│   ├── training/
-│   ├── evaluation/
-│   └── variant_effect/
-├── notebooks/
-├── results/
-│   ├── predictions/
-│   ├── figures/
-│   └── variant_effects/
-└── README.md
+| stage| mean_f | mean_nf | median_f | median_nf | U-test, p | AUC |
+|---|---|---|---|---|---|---|
+| CS13 | 0.00561832 | 0.00083852 | 0.00561832 | 0.00043851 | 0.00118054 | 0.98440066 |
+| CS14 | 0.00413628 | 0.00077085 | 0.00413628 | 0.00040994 | 0.00181374 | 0.98029557 |
+| CS15 | 0.00481285 | 0.00074928 | 0.00481285 | 0.00041123 | 0.00107322 | 0.98522167 |
+| CS17 | 0.00511827 | 0.00084775 | 0.00511827 | 0.00043151 | 0.00167422 | 0.98111658 |
+| CS22 | 0.00521721 | 0.00092974 | 0.00521721 | 0.00049293 | 0.00195326 | 0.97947455 |
 
-📚 Citation
+Group distribution and per-track distribution:
+<img src="./output1.png" width="500px"></img>
+<img src="./output2.png" width="500px"></img>
 
-Please cite the Enformer paper and relevant datasets as appropriate.
+The code example is at ```calculate_variant_effect.ipynb```
 
-📨 Contact
-
-For questions or contributions, feel free to open an Issue or Pull Request.
+## 📚 Citation
+```
+@article {Avsec2021.04.07.438649,
+    author  = {Avsec, {\v Z}iga and Agarwal, Vikram and Visentin, Daniel and Ledsam, Joseph R. and Grabska-Barwinska, Agnieszka and Taylor, Kyle R. and Assael, Yannis and Jumper, John and Kohli, Pushmeet and Kelley, David R.},
+    title   = {Effective gene expression prediction from sequence by integrating long-range interactions},
+    elocation-id = {2021.04.07.438649},
+    year    = {2021},
+    doi     = {10.1101/2021.04.07.438649},
+    publisher = {Cold Spring Harbor Laboratory},
+    URL     = {https://www.biorxiv.org/content/early/2021/04/08/2021.04.07.438649},
+    eprint  = {https://www.biorxiv.org/content/early/2021/04/08/2021.04.07.438649.full.pdf},
+    journal = {bioRxiv}
+}
+```
