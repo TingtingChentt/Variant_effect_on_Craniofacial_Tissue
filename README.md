@@ -144,8 +144,6 @@ For each test sequence:
 - Predict H3K27ac signal for all 5 stages
 - Compare predicted vs. observed signals
 
-Visualizations include:
-
 ### 2. Variant Effect Analysis
 #### (1) Single Variant Δ Prediction
 
