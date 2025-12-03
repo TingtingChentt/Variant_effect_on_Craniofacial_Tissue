@@ -198,21 +198,31 @@ logfc_bins = np.log2((y_alt + eps) / (y_ref + eps))
 Group comparison: stats + AUC
 ```Python
 # Descriptive stats
-mean_func: 0.004429922439157963
-mean_nonfunc: 0.0009583568316884339
-median_func: 0.004429922439157963
-median_nonfunc: 0.00047779930173419416
+mean_func: 0.005948997102677822
+mean_nonfunc: 0.0010469886474311352
+median_func: 0.005948997102677822
+median_nonfunc: 0.000566632195841521
 
 # Mann-Whitney U-test (non-parametric)
-mannwhitney_U: 1183.0
-mannwhitney_p: 0.0036704139947948806
+mannwhitney_U: 1197.0
+mannwhitney_p: 0.001416651015534866
 
 # Effect size
-cohens_d: 1.973862886428833
+cohens_d: 2.804356813430786
 
 # AUC: can scores distinguish functional vs non-functional?
-auc: 0.971264367816092
+auc: 0.9827586206896552
 ```
+From the above results, we can see that functional variants have much larger predicted effect
+
+✔ Mann–Whitney test highly significant
+
+✔ Cohen’s d greater than 2 — huge separation
+
+✔ AUC ~0.98 — excellent predictive power
+
+**The model’s predicted REF–ALT effect scores strongly distinguish functional from non-functional variants (AUC = 0.98; Mann–Whitney p = 0.0014; Cohen’s d = 2.80)**
+
 Per-track stats (f->functional, nf->nonfunctional):
 
 | stage| mean_f | mean_nf | median_f | median_nf | U-test, p | AUC |
@@ -224,8 +234,9 @@ Per-track stats (f->functional, nf->nonfunctional):
 | CS22 | 0.00521721 | 0.00092974 | 0.00521721 | 0.00049293 | 0.00195326 | 0.97947455 |
 
 Group distribution and per-track distribution:
-<img src="./output1.png" width="500px"></img>
-<img src="./output2.png" width="500px"></img>
+
+<img src="./distribution.png" width="400px"></img>
+<img src="./per_task_score.png" width="500px"></img>
 
 The code example is at ```calculate_variant_effect.ipynb```
 
