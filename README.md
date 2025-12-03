@@ -108,92 +108,81 @@ This prevents sequence leakage across sets (We excluded: chrY).
 
 - Replace Enformer’s original output head with a 5-track regression head
 (one track for each Carnegie stage: CS13, CS14, CS15, CS17, CS20)
-- Freeze or partially freeze backbone layers (optional)
-- Train with Poisson loss on binned chromatin targets
+- Finetune the new head + selected upper layers
+- Optimize using MSE or Poisson regression loss
 
-<img src="./finetune.pdf" width="450px"></img>
+<img src="./finetune.png" width="450px"></img>
 
-🚀 Usage
-Training
+## 🚀 Usage
+### Install
+```
+$ pip install enformer-pytorch
+```
+### Training
+```
+python enformer_pytorch/train.py \
+    --model-name H3K27ac_batchsize_4_lr1e-5_clip0.5_noamp_chromsplit811 \
+    --num-tracks 5 \
+    --batch-size 4 \
+    --num-workers 2 \
+    --print-every 50 \
+    --log-every 50 \
+    --log-grads \
+    --grad-log-every 50 \
+    --clip-grad 0.5 \
+    --lr 1e-5 \
+    --no-amp \
+    --rc-aug
+```
 
-(Insert exact training script or command, e.g.,)
-
-python train.py \
-  --data_dir data/processed \
-  --output_dir results \
-  --epochs 20 \
-  --batch_size 4
-
-Inference
-
-Predict chromatin signal for any genomic region:
-
-python predict.py \
-  --chrom chr2 \
-  --start 100000 \
-  --end 214688 \
-  --output prediction.npy
-
-📈 Experimental Results
-4.1 Chromatin Signal Prediction
+## 📈 Experimental Results
+### 1. Chromatin Signal Prediction
 
 For each test sequence:
 
-Extract 114,688 bp sequence
-
-Run predictions for all 5 stages
-
-Compare predicted vs. observed signals
+- Extract 196,608-bp reference region
+- Predict H3K27ac signal for all 5 stages
+- Compare predicted vs. observed signals
 
 Visualizations include:
 
-line plots
+### 2. Variant Effect Analysis
+#### (1) Single Variant Δ Prediction
 
-heatmaps
+Given a variant:
 
-correlation metrics
+- Extract the reference sequence
+- Create the mutated sequence
+- Run both through the model
 
-(Example images can be added to the repository.)
-
-4.2 Variant Effect Analysis
-(1) Single Variant Effect
-
-Steps:
-
-Extract reference sequence
-
-Generate mutant sequence
-
-Predict signals for both
-
-Compute effect size:
-
-delta = prediction_mutant - prediction_reference
-
+Compute the effect:
+```
+diff = y_alt - y_ref
+```
 
 Used to identify:
 
-enhancer gain/loss
+- enhancer gain/loss
+- stage-specific regulatory disruptions
 
-stage-specific regulatory disruptions
-
-(2) IRF6 Variant Group Analysis
+#### (2) IRF6 Variant Group Analysis
 
 Variants are grouped into:
 
-Functional variants
-
-Non-functional variants
+- Functional variants
+- Non-functional variants
 
 For each variant:
 
-Compute delta score
-
-Summarize distributions
-
-Perform statistical tests (Mann–Whitney U, t-test)
-
-Compute classification AUC
+- Compute delta score
+```Python
+# bin-wise differences
+delta_bins = y_alt - y_ref                      # (B, T)
+logfc_bins = np.log2((y_alt + eps) / (y_ref + eps))
+```
+- Summarize distributions
+- Perform statistical tests (Mann–Whitney U, t-test)
+- Compute classification AUC
 
 Visualizations:
 
@@ -203,7 +192,8 @@ scatter plots
 
 ROC curves
 
-📁 Repository Structure
+## 📁 Repository Structure
+
 ├── data/
 │   ├── raw/
 │   ├── bigwig/
