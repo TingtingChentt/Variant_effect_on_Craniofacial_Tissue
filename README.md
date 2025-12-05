@@ -1,4 +1,4 @@
-# Finetuning Enformer on Human Embryonic H3K27ac Chromatin Signals
+# Multimodal Variant Effect Model
 
 This repository contains code and pipelines for:
 
